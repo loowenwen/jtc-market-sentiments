@@ -1,4 +1,6 @@
 # jtc-market-sentiments
+IMPT: I shifted the files here and there so make sure the file path is accurate, all the file paths are assumed to be in the same directory as the Jupyter notebook
+
 ## 1. data_collection.ipynb
 OUTPUTS "urls.xlsx"
 
