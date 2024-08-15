@@ -92,3 +92,25 @@ OUTPUTS "final_market_sentiments.xlsx"
 - Note that the texts was previously extracted in another Jupyter notebook, will try dig it out and add into this repository
 - For consultancy reports, the way I generated the market sentiment value for each report was to calculate the average of the two nearest number as when I was looking at the values, I realised the difference in values can range a lot, like one of the prompt could be negative while the other two is positive, hence I adopted the method of just taking the average of the two nearest numbers. I think its definitely possible to think of other ways of tabulating the sentiments. 
 - When generating the JSONL file, change the "sheet_name", "output_file" accordingly. 
+
+## text extraction for consultancy reports folder
+
+### 1. text_extraction.ipynb
+
+- Main notebook to extract text from the PDFs in a folder 
+
+### 2. image_extraction.ipynb
+
+- Main notebook to extract text from images in a folder
+    - Used because EdgeProp articles are usually saved as an image file on the teamsite
+
+### 3. text.ipynb
+
+- A single code to extract texts from the specified PDF
+    - Used in case when the previous round of extraction wasn't successful, so I would individually sieve out the ones that didn't extract properly and use the code in this file
+
+### 4. image.ipynb
+
+- A single code to extract texts from the specified image
+    - Used in case when the previous round of extraction wasn't successful, so I would individually sieve out the ones that didn't extract peroperly and use the code in this file
+
