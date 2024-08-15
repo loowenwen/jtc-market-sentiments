@@ -44,3 +44,35 @@ OUTPUTS "sentiments.xlsx"
 - Use the first code chunk once for each new sheet to create the sheet, however, do change the way of saving to excel file accordingly as one creates the excel file, and one amend the excel file to contain the new sheet
     - IMPT because the first way rewrites the entire file so would have to restart
 - Use the second code chunk to amend to the dataframe to include the new columns, i.e., the returned results from ChatGPT
+
+## 4. sentiments.ipynb
+
+OUTPUTS "sentiments_cleaned.xlsx"
+
+- Section "Preparation of Excel File"
+- This can get confusing so, under "sentiments.xlsx", each sheet would have the headers - custom_id, categorical_x, categorical_y, numerical_x, numerical_y, numerical_z
+    - I changed the header name manually on my own, but it would have been user_content if I remember correctly
+- What I did was to also read the JSONL file used during ChatGPT API, one of them would be sufficient i.e. 2020_2024(1) or 2020_2024(5) is okay as what I needed was the custom_id and user_content (which contains the texts used)
+- I then merged the two dataframe on "custom_id" under the "merged_df"
+- Afterwards, I combined the "merged_df" with the imported dataframe of "texts_cleaned.xlsx" because I wanted the dates of the articles that I extracted previously
+_ Similarly, do take note on the code lines for saving the file into Excel file
+
+OUTPUTS "market_sentiments.xlsx"
+
+- Section "Data Analysis"
+- Firstly, map the categorical values, i.e., Positive, Negative, Neutral to 1, -1, 0 respectively
+- Secondly, calculate the numerical difference between the numerical values
+
+OUTPUTS "processed_market_sentiments.xlsx"
+
+- Section "Market Sentiments"
+- Actually, my robustness criteria was different from what was shared... 
+    - Using the cumulative percentage for numerical difference..
+        - Those below 60th percentile, which in general has a numerical difference of less than 0.2, I averaged out the numerical values
+        - Those above 60th and below 85th percentile, which in general has a numerical difference of 0.2 to 0.4, I averaged out the two nearest numerical values
+        - Those above 85th percentile, which in gneral has a numerical difference of more than 0.4, I averaged out all the five values
+
+OUTPUTS "final_market_sentiments.xlsx"
+
+- Section "Final Market Sentiments"
+- Well, given the calculated sentiments for each text, I average out the value by grouping into Month, Quarter and Year respectively
