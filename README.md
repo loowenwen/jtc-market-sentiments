@@ -76,3 +76,19 @@ OUTPUTS "final_market_sentiments.xlsx"
 
 - Section "Final Market Sentiments"
 - Well, given the calculated sentiments for each text, I average out the value by grouping into Month, Quarter and Year respectively
+
+## 5. market_sentiments.ipynb
+
+- Can just ignore this file, it was my previous attempt to explore the data and find some correlations
+
+## 6. rerun.ipynb
+
+- It was the Jupyter notebook I used to do the rerun
+- Can just ignore this file as well as I mainly used my code from "sentiments.ipynb" to achieve my goal
+
+## 7. consultancy_reports.ipynb
+
+- Working file used to generate market sentiments for consultancy reports
+- Note that the texts was previously extracted in another Jupyter notebook, will try dig it out and add into this repository
+- For consultancy reports, the way I generated the market sentiment value for each report was to calculate the average of the two nearest number as when I was looking at the values, I realised the difference in values can range a lot, like one of the prompt could be negative while the other two is positive, hence I adopted the method of just taking the average of the two nearest numbers. I think its definitely possible to think of other ways of tabulating the sentiments. 
+- When generating the JSONL file, change the "sheet_name", "output_file" accordingly. 
