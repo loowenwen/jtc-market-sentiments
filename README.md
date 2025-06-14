@@ -1,116 +1,166 @@
-# jtc-market-sentiments
-IMPT: I tidied some of the files here and there so make sure the file path is accurate, all the file paths are assumed to be in the same directory as the Jupyter notebook in the Python codes but that may not be the case. For example, I have moved the JSONL files into new folders, so the code would return code error if you run the code directly without modification
 
-## 1. data_collection.ipynb
+# jtc-market-sentiments
+
+**Note:** This project was developed during an internship with **JTC Corporation**. It explores the use of the **ChatGPT-4 API** for sentiment analysis of news articles related to Singapore's industrial property market. The final output is a structured dataset of **market sentiment indicators** across different time periods.
+
+> ⚠️ Some file paths have been reorganized for better structure. Ensure your paths are updated if running any code directly — especially for the JSONL and Excel files.
+
+---
+
+## Project Structure
+
+### `1. data_collection.ipynb`
+
+**Outputs:** `urls.xlsx`, `texts.xlsx`
+
+* Extracts URLs using Google Search (based on defined time period and keywords).
+* Cleans URLs: removes duplicates and filters to five key news sources.
+* Scrapes article dates using the URLs.
+* Scrapes article content into `texts.xlsx`.
+  ## 1. data_collection.ipynb
 OUTPUTS "urls.xlsx"
 
-- Essentially extracts URLs using the specified google search item by the time period 
-- Cleans the URLs by removing duplicates and filtering for those under the 5 news media sources
-- Scrapes the dates from the article using the URLs
+---
 
-OUTPUTS "texts.xlsx"
-- Scrapes the texts from the article using the URLs
+### `2. data_cleaning.ipynb`
 
-## 2. data_cleaning.ipynb
-OUTPUTS "texts_cleaned.xlsx"
+**Outputs:** `texts_cleaned.xlsx`
 
-- If you run the code chunks individually, the cleaned texts is saved to "data_cleaning.xlsx" first, so can look at the genereted file to see if the cleaning is done accurately, or to your preference
-- "texts_cleaned.xlsx" contains the cleaned texts that would be updated as the code runs because...
-    -  I filtered the dataframe by the domain (source) to clean the texts separately
-    - However, when saving to the "texts_cleaned.xlsx" the dataframe will contain the cleaned texts as well as the uncleaned ones, until all are cleaned
-- For EdgeProp sources, I realised that there were many URLs that failed the text scraping initially, so I tried to rescrape the texts for the failed URLs
-    - I explored rescraping the text twice...
-        - But, not all URLs managed to be scraped successfully, so I actually just deleted those that has the output "failed to retrieve content"
-        - Maybe can explore manual copy paste but I did not try that method as the number of articles were sufficient to do the study on
+* Initially saves partial cleaned texts to `data_cleaning.xlsx` when running cell-by-cell.
+* `texts_cleaned.xlsx` contains a mix of cleaned/uncleaned articles until all sources are processed.
+* Cleaning is done source by source (e.g., EdgeProp).
+* For EdgeProp:
 
-## 3. chatgpt_batch.ipynb
-OUTPUTS JSONL FILES FOR CHATGPT BATCH API
+  * Many URLs failed text scraping.
+  * Rescraping was attempted (twice); persistent failures were removed.
+  * Manual copy-pasting was not pursued as article volume was sufficient.
 
-- Under the Generating JSONL File section
+---
 
-FEEDS JSONL FILES INTO CHATGPT API
+### `3. chatgpt_batch.ipynb`
 
-- Link to access the ChatGPT Batch API: https://platform.openai.com/batches
-    - Can keep track if the batches are done, and download the output files
-    - IMPT: ChatGPT API has an enqueued token limit of 90,000 tokens, meaning, in some cases might have to separate the texts in the same sheet into smaller files, I did not face issues for the articles but I faced this issue for the consultancy reports as the word count for the reports are too high. 
+**Purpose:** Format and send JSONL files to ChatGPT Batch API
+**Outputs:**
 
-JSONL FILES
+* JSONL files in `chatgpt/jsonl/`
+* Results in JSONL files (e.g., `2010_2014.jsonl`)
+* `sentiments.xlsx`
 
-- All the created JSONL files meant to be inputted into ChatGPT Batch API are found in chatgpt > jsonl
-- However, for the downloaded results (which are in JSONL file formant) are split accordingly to the time frame i.e. 2010_2014
+#### Key Notes:
 
-OUTPUTS "sentiments.xlsx"
+* Generate JSONL files under "Generating JSONL File" section.
+* Upload to: [OpenAI ChatGPT Batch API](https://platform.openai.com/batches)
+* Batch token limit: 90,000 tokens.
 
-- Use the first code chunk once for each new sheet to create the sheet, however, do change the way of saving to excel file accordingly as one creates the excel file, and one amend the excel file to contain the new sheet
-    - IMPT because the first way rewrites the entire file so would have to restart
-- Use the second code chunk to amend to the dataframe to include the new columns, i.e., the returned results from ChatGPT
+  * Articles usually fine.
+  * Long consultancy reports may need splitting.
 
-## 4. sentiments.ipynb
+#### Writing to Excel:
 
-OUTPUTS "sentiments_cleaned.xlsx"
+* The first code chunk **creates** an Excel file and should be run once.
+* The second appends new sheets with ChatGPT results.
 
-- Section "Preparation of Excel File"
-- This can get confusing so, under "sentiments.xlsx", each sheet would have the headers - custom_id, categorical_x, categorical_y, numerical_x, numerical_y, numerical_z
-    - I changed the header name manually on my own, but it would have been user_content if I remember correctly
-- What I did was to also read the JSONL file used during ChatGPT API, one of them would be sufficient i.e. 2020_2024(1) or 2020_2024(5) is okay as what I needed was the custom_id and user_content (which contains the texts used)
-- I then merged the two dataframe on "custom_id" under the "merged_df"
-- Afterwards, I combined the "merged_df" with the imported dataframe of "texts_cleaned.xlsx" because I wanted the dates of the articles that I extracted previously
-_ Similarly, do take note on the code lines for saving the file into Excel file
+  * ⚠️ First method **overwrites** existing data — use cautiously.
 
-OUTPUTS "market_sentiments.xlsx"
+---
 
-- Section "Data Analysis"
-- Firstly, map the categorical values, i.e., Positive, Negative, Neutral to 1, -1, 0 respectively
-- Secondly, calculate the numerical difference between the numerical values
+### `4. sentiments.ipynb`
 
-OUTPUTS "processed_market_sentiments.xlsx"
+**Outputs:**
 
-- Section "Market Sentiments"
-- Actually, my robustness criteria was different from what was shared... 
-    - Using the cumulative percentage for numerical difference..
-        - Those below 60th percentile, which in general has a numerical difference of less than 0.2, I averaged out the numerical values
-        - Those above 60th and below 85th percentile, which in general has a numerical difference of 0.2 to 0.4, I averaged out the two nearest numerical values
-        - Those above 85th percentile, which in gneral has a numerical difference of more than 0.4, I averaged out all the five values
+* `sentiments_cleaned.xlsx`
+* `market_sentiments.xlsx`
+* `processed_market_sentiments.xlsx`
+* `final_market_sentiments.xlsx`
 
-OUTPUTS "final_market_sentiments.xlsx"
+#### Breakdown:
 
-- Section "Final Market Sentiments"
-- Well, given the calculated sentiments for each text, I average out the value by grouping into Month, Quarter and Year respectively
+**A. Cleaning Sentiments**
 
-## 5. market_sentiments.ipynb
+* "sentiments.xlsx" sheets renamed (e.g., from `user_content` to `categorical_x`, etc.).
+* Merged `sentiments` results with:
 
-- Can just ignore this file, it was my previous attempt to explore the data and find some correlations
+  * JSONL input (`custom_id`, `user_content`)
+  * Original texts (to retain article dates)
 
-## 6. rerun.ipynb
+**B. Analysis**
 
-- It was the Jupyter notebook I used to do the rerun
-- Can just ignore this file as well as I mainly used my code from "sentiments.ipynb" to achieve my goal
+* Mapped: Positive → 1, Neutral → 0, Negative → -1
+* Computed numerical sentiment differences.
 
-## 7. consultancy_reports.ipynb
+**C. Robustness Filtering**
 
-- Working file used to generate market sentiments for consultancy reports
-- Note that the texts was previously extracted in another Jupyter notebook, will try dig it out and add into this repository
-- For consultancy reports, the way I generated the market sentiment value for each report was to calculate the average of the two nearest number as when I was looking at the values, I realised the difference in values can range a lot, like one of the prompt could be negative while the other two is positive, hence I adopted the method of just taking the average of the two nearest numbers. I think its definitely possible to think of other ways of tabulating the sentiments. 
-- When generating the JSONL file, change the "sheet_name", "output_file" accordingly. 
+* Applied percentile logic based on sentiment spread:
 
-## text extraction for consultancy reports folder
+  * <60th percentile (∆ < 0.2): average all 5 values
+  * 60–85th percentile (∆ 0.2–0.4): average 2 nearest
+  * > 85th percentile (∆ > 0.4): average 5 values
 
-### 1. text_extraction.ipynb
+**D. Final Output**
 
-- Main notebook to extract text from the PDFs in a folder 
+* Averaged sentiment scores by Month, Quarter, Year → `final_market_sentiments.xlsx`
 
-### 2. image_extraction.ipynb
+---
 
-- Main notebook to extract text from images in a folder
-    - Used because EdgeProp articles are usually saved as an image file on the teamsite
+### `5. market_sentiments.ipynb`
 
-### 3. text.ipynb
+**Note:**
 
-- A single code to extract texts from the specified PDF
-    - Used in case when the previous round of extraction wasn't successful, so I would individually sieve out the ones that didn't extract properly and use the code in this file
+* Older file used for initial data exploration.
+* Can be ignored.
 
-### 4. image.ipynb
+---
 
-- A single code to extract texts from the specified image
-    - Used in case when the previous round of extraction wasn't successful, so I would individually sieve out the ones that didn't extract peroperly and use the code in this file
+### `6. rerun.ipynb`
 
+**Note:**
+
+* Used for re-running selected code segments from `sentiments.ipynb`.
+* Can also be ignored.
+
+---
+
+### `7. consultancy_reports.ipynb`
+
+**Purpose:**
+
+* Applied same sentiment analysis logic to consultancy reports.
+
+**Notes:**
+
+* Texts were extracted via a different notebook (to be added to repo).
+* Sentiment score for each report = **average of two nearest numbers** (due to variance across prompts).
+* Modify `sheet_name`, `output_file` when generating JSONL for this part.
+
+---
+
+## 📂 `text extraction for consultancy reports` folder
+
+### `1. text_extraction.ipynb`
+
+* Extracts text from PDFs in bulk.
+
+### `2. image_extraction.ipynb`
+
+* Extracts text from image-based articles (e.g., EdgeProp screenshots).
+
+### `3. text.ipynb`
+
+* Extracts text from a **single PDF** (used for manual retries).
+
+### `4. image.ipynb`
+
+* Extracts text from a **single image** (used for manual retries).
+
+---
+
+## Summary
+
+This project shows a full pipeline for:
+
+1. Scraping and cleaning news data
+2. Structuring content for ChatGPT-4 batch processing
+3. Interpreting and refining model outputs
+4. Producing a time-series of **industrial market sentiments**.
+
+For detailed logic and decisions, refer back to the individual notebook sections.
