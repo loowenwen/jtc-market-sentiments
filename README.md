@@ -17,8 +17,6 @@
 * Cleans URLs: removes duplicates and filters to five key news sources.
 * Scrapes article dates using the URLs.
 * Scrapes article content into `texts.xlsx`.
-  ## 1. data_collection.ipynb
-OUTPUTS "urls.xlsx"
 
 ---
 
